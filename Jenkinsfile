@@ -7,16 +7,17 @@ pipeline {
                 git branch: 'master', url: 'https://github.com/deeppawar11/martin_repo.git'
             }
         }
-        stage('Compile') {
+        stage('Build Docker Image') {
             steps {
-                sh 'javac HelloWorld.java'
+                sh 'docker build -t hello-world-java .'
             }
         }
-        stage('Execute') {
+        stage('Run Docker Container') {
             steps {
-                sh 'java HelloWorld'
+                sh 'docker run --rm hello-world-java'
             }
         }
     }
 }
+
 
