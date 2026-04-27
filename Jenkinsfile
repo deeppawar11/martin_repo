@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('martin')
+        DOCKER_IMAGE = "dockerhub_username/hello-world-java"
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -9,12 +14,17 @@ pipeline {
         }
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t hello-world-java .'
+                sh 'docker build -t $DOCKER_IMAGE:latest .'
             }
         }
-        stage('Run Docker Container') {
+        stage('Login to DockerHub') {
             steps {
-                sh 'docker run --rm hello-world-java'
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+            }
+        }
+        stage('Push Docker Image') {
+            steps {
+                sh 'docker push $DOCKER_IMAGE:latest'
             }
         }
     }
